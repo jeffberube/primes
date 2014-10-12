@@ -1,3 +1,16 @@
+/*
+ * @Author:	Jeff Berube
+ * @Title:	Primes
+ *
+ * @Usage	./primes <MAX> <NUMTHREADS>
+ *
+ * 		<MAX>		Maximum number to calculate primes to
+ * 		<NUMTHREADS>	Number of threads to split the workload amongst
+ *
+ * @Description:	Calculates primes from 1 to MAX using NUMTHREADS threads.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -17,6 +30,7 @@ pthread_mutex_t lock;
 
 void *sieve(void *param) {
 
+	/* Variables */
 	int flag = 0;
 	int threadnum = (int)param ;
 	int interval_size = max / numthreads;
@@ -24,7 +38,8 @@ void *sieve(void *param) {
 	int end = (threadnum + 1) * interval_size;
 	struct timeval t_start, t_end;
 
-	int *primes = malloc(interval_size * sizeof(int));
+	/* Allocate space to store all primes */
+	int *primes = malloc((interval_size / 2) * sizeof(int));
 	int index = 0;
 
 	/* If last thread and range doesn't divide nicely by NUMTHREADS */
@@ -36,7 +51,7 @@ void *sieve(void *param) {
 	/* Start timer for thread runtime */
 	gettimeofday(&t_start);
 
-	for (i = start + 1; i < end; ++i) {
+	for (i = start; i < end; ++i) {
 
 		flag = 0;
 
@@ -61,14 +76,14 @@ void *sieve(void *param) {
 	/* End timer for thread runtime */
 	gettimeofday(&t_end);
 
-	/* Calculate sieve runtime */
-
 	/* Enter critical output region */
 	pthread_mutex_lock(&lock);
 
+	/* Show thread stats */
 	printf("\n\nThread: %d \tStart: %d \tEnd: %d \tRuntime: %lu\xC2\xB5s\n", 
 			threadnum + 1, start, end, t_end.tv_usec - t_start.tv_usec);
 	
+	/* Dump primes */
 	printf("Primes: ");
 
 	i = 0;
@@ -83,6 +98,9 @@ void *sieve(void *param) {
 	pthread_mutex_unlock(&lock);
 
 	/* Exit critical region */
+
+	free(primes);
+
 }
 
 int main (int argc, char *argv[]) {
@@ -97,25 +115,26 @@ int main (int argc, char *argv[]) {
 	pthread_t tid;
 	pthread_attr_t attr;
 
-	/* If the number of arguments isn't correct */
+	/* Test error conditions */
 	if (argc != 3) {
 	
 		fprintf(stderr, "Usage: primes <max> <numthreads>\n");
 		return -1;
 
-	}
+	} else if (max < 10) {
 
-	if (max < 2) {
-
-		fprintf(stderr, "You must enter a number greater than 1 as the upper bound");
+		fprintf(stderr, "You must enter a number greater than 10 as the upper bound.\n");
 		return -1;
 
-	}
+	} else if (numthreads >= max / 2) {
 
-	if (numthreads > max) {
+		fprintf(stderr, "Number of threads must be less than half of MAX.\n");
+		return -1;		
 
-		
-
+	} else if (numthreads > 50) {
+	
+		fprintf(stderr, "Maximum number of threads is 50.");
+		return -1;
 	}
 
 	/* Init mutex */
