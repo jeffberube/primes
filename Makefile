@@ -10,4 +10,4 @@ primes: $(OBJ)
 	$(CC) -g -c $<
 
 clean:
-	rm *.o sched
+	rm *.o primes 

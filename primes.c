@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <time.h>
 
 int max, numthreads;
+
+pthread_mutex_t lock;
 
 /*
  * sieve
@@ -19,15 +22,19 @@ void *sieve(void *param) {
 	int interval_size = max / numthreads;
 	int start = (threadnum * interval_size) + 1;
 	int end = (threadnum + 1) * interval_size;
+	struct timeval t_start, t_end;
+
+	int *primes = malloc(interval_size * sizeof(int));
+	int index = 0;
 
 	/* If last thread and range doesn't divide nicely by NUMTHREADS */
 	if (threadnum == numthreads - 1 && max % interval_size) end += max % numthreads;
 	
-	printf("Thread: %d \tStart: %d \tEnd: %d\n", threadnum, start, end);
-	
-	printf("Primes: ");
-
+	/* This is where the magic happens */
 	int i, j;	
+
+	/* Start timer for thread runtime */
+	gettimeofday(&t_start);
 
 	for (i = start + 1; i < end; ++i) {
 
@@ -42,12 +49,40 @@ void *sieve(void *param) {
 
 		}
 
-		if (!flag) printf("%d ", i);
+		if (!flag) {
+			
+			*(primes + index) = i;
+			index++;
+
+		}
 
 	}
 
-	printf("\n\n");
+	/* End timer for thread runtime */
+	gettimeofday(&t_end);
 
+	/* Calculate sieve runtime */
+
+	/* Enter critical output region */
+	pthread_mutex_lock(&lock);
+
+	printf("\n\nThread: %d \tStart: %d \tEnd: %d \tRuntime: %lu\xC2\xB5s\n", 
+			threadnum + 1, start, end, t_end.tv_usec - t_start.tv_usec);
+	
+	printf("Primes: ");
+
+	i = 0;
+	
+	while (i < index) {
+	
+		printf("%d ", *(primes + i));
+		i++;
+
+	}
+
+	pthread_mutex_unlock(&lock);
+
+	/* Exit critical region */
 }
 
 int main (int argc, char *argv[]) {
@@ -83,6 +118,14 @@ int main (int argc, char *argv[]) {
 
 	}
 
+	/* Init mutex */
+	if (pthread_mutex_init(&lock, NULL) != 0) {
+	
+		printf("Mutex init failed. Try restarting.");
+		return -1;
+
+	}
+
 	/* Initiate and create thread */
 	pthread_attr_init(&attr);
 
@@ -94,14 +137,19 @@ int main (int argc, char *argv[]) {
 		i++;
 	}
 
+
 	i = 0;
 
 	while (i < numthreads) {
 
 		pthread_join(*(threads + i), NULL);
+		i++;
 
 	}
+	
+	pthread_mutex_destroy(&lock);
 
+	printf("\n\n");
 
 	return  0;
 
