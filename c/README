@@ -1,0 +1,29 @@
+@Author: 	Jeff Berube
+@ID:		4356171
+@Title:		primes (Assignment #4 - CS2010)
+	
+
+@Description:	Finds all prime numbers in range [1..N] using M threads.
+
+
+@Compile:	To compile, type 
+
+		make 
+
+		inside program directory.
+
+
+@How to use:	To use, type
+
+		./primes <MAX> <THREADS>
+
+		inside program directory where MAX is the upper bound of the
+		range to search for primes and THREADS is the number of threads
+		to use to find the prime numbers.
+
+
+@Git:		To clone into directory, type
+
+		git clone https://github.com/jeffberube/primes.git
+
+		inside directory.
