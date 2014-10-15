@@ -80,7 +80,7 @@ void *sieve(void *param) {
 	pthread_mutex_lock(&lock);
 
 	/* Show thread stats */
-	printf("\n\nThread: %d \tStart: %d \tEnd: %d \tRuntime: %lu\xC2\xB5s\n", 
+	printf("\n\nThread: %d \tStart: %d \tEnd: %d \tExecution time: %lu\xC2\xB5s\n", 
 			threadnum + 1, start, end, t_end.tv_usec - t_start.tv_usec);
 	
 	/* Dump primes */
