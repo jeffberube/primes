@@ -1,0 +1,18 @@
+@Author:	Jeff Berube
+@Title:		Primes (Java)
+
+@Description:	Computes all the primes from 1 to MAX using NUMTHREADS threads.
+
+@Usage		java Primes <MAX> <NUMTHREADS>
+
+		<MAX>	Integer number between 4 and MAXINT (Usually 2^31)
+			The program will calculate primes between 1 and MAX
+
+		<NUMTHREADS>	Integer number between 1 and 50.
+				The program will split the workload amongst
+				NUMTHREAD threads.
+
+
+@Compiling	javac Primes.java
+
+		Requires Java JDK 7.

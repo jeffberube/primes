@@ -4,8 +4,8 @@
  *
  * @Usage	./primes <MAX> <NUMTHREADS>
  *
- * 		<MAX>		Maximum number to calculate primes to
- * 		<NUMTHREADS>	Number of threads to split the workload amongst
+ * 		<MAX>		Integer number between 4 and MAXINT (Usualy 2^31)
+ * 		<NUMTHREADS>	Integer number between 1 and 50
  *
  * @Description:	Calculates primes from 1 to MAX using NUMTHREADS threads.
  *
